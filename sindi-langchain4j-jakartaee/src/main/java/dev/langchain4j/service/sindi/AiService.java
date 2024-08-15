@@ -8,9 +8,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.eclipse.microprofile.rest.client.inject.RestClient.RestClientLiteral;
-
 import dev.langchain4j.agent.tool.Tool;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
@@ -20,7 +17,6 @@ import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Stereotype;
-import jakarta.enterprise.util.AnnotationLiteral;
 
 /**
  * @author Buhake Sindi
