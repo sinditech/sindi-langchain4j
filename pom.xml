@@ -1,0 +1,125 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>za.co.sindi</groupId>
+	<artifactId>sindi-langchain4j</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	
+	<developers>
+		<developer>
+			<name>Buhake Sindi</name>
+			<timezone>+2</timezone>
+			<roles>
+				<role>PROJECT LEAD</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.report.sourceEncoding>UTF-8</project.report.sourceEncoding>
+		<langchain4j.version>0.33.0</langchain4j.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<jakartaee-api.version>10.0.0</jakartaee-api.version>
+		<microprofile-api.version>6.1</microprofile-api.version>
+		<compiler-plugin.version>3.13.0</compiler-plugin.version>
+		<war-plugin.version>3.4.0</war-plugin.version>
+	</properties>
+	
+	<dependencyManagement>
+		<dependencies>
+			<!-- https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-api -->
+			<dependency>
+				<groupId>jakarta.platform</groupId>
+				<artifactId>jakarta.jakartaee-api</artifactId>
+				<version>${jakartaee-api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.eclipse.microprofile</groupId>
+				<artifactId>microprofile</artifactId>
+				<version>${microprofile-api.version}</version>
+				<type>pom</type>
+				<scope>provided</scope>
+			</dependency>
+			
+			<dependency>
+			    <groupId>dev.langchain4j</groupId>
+			    <artifactId>langchain4j</artifactId>
+			    <version>${langchain4j.version}</version>
+			</dependency>
+			
+			<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+			<dependency>
+			    <groupId>org.mockito</groupId>
+			    <artifactId>mockito-core</artifactId>
+			    <version>5.7.0</version>
+			    <scope>test</scope>
+			</dependency>
+			
+			<!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
+			<dependency>
+			    <groupId>org.mockito</groupId>
+			    <artifactId>mockito-junit-jupiter</artifactId>
+			    <version>5.7.0</version>
+			    <scope>test</scope>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+			<dependency>
+			    <groupId>org.junit.jupiter</groupId>
+			    <artifactId>junit-jupiter-api</artifactId>
+			    <version>5.10.1</version>
+			    <scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
+	<build>
+		<pluginManagement>
+			<plugins>
+				<!--
+				https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${compiler-plugin.version}</version>
+					<configuration>
+						<source>${maven.compiler.source}</source>
+						<target>${maven.compiler.target}</target>
+					</configuration>
+				</plugin>
+
+				<!--
+				https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.2.5</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<modules>
+		<module>sindi-langchain4j-jakartaee</module>
+		<module>sindi-langchain4j-vertex-ai-gemini-jakartaee</module>
+		<module>sindi-langchain4j-hugging-face-jakartaee</module>
+	</modules>
+</project>
