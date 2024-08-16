@@ -10,12 +10,15 @@ import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
 import jakarta.enterprise.inject.build.compatible.spi.ClassConfig;
 import jakarta.enterprise.inject.build.compatible.spi.Enhancement;
 import jakarta.enterprise.inject.build.compatible.spi.FieldConfig;
+import jakarta.enterprise.inject.build.compatible.spi.MethodConfig;
 import jakarta.enterprise.inject.build.compatible.spi.Synthesis;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanBuilder;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents;
 import jakarta.enterprise.lang.model.AnnotationInfo;
 import jakarta.enterprise.lang.model.declarations.ClassInfo;
 import jakarta.enterprise.lang.model.declarations.FieldInfo;
+import jakarta.enterprise.lang.model.declarations.MethodInfo;
+import jakarta.enterprise.lang.model.declarations.ParameterInfo;
 import jakarta.enterprise.lang.model.types.ClassType;
 import za.co.sindi.commons.utils.Classes;
 import za.co.sindi.commons.utils.Reflections;
@@ -29,7 +32,6 @@ public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatib
 
 	private static final Logger LOGGER = Logger.getLogger(LangChainAiServiceBuildCompatibleExtension.class.getName());
 	private static final Set<Class<?>> detectedAIServicesDeclaredInterfaces = new HashSet<>();
-//    private static final Set<String> detectedTools = new HashSet<>();
     public static final String PARAM_INTERFACE_CLASS = "interfaceClass";
 
     @Enhancement(types = Object.class, withSubtypes = true)
@@ -39,9 +41,23 @@ public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatib
         ClassInfo classInfo = classConfig.info();
         detectAiService(classInfo);
     }
+    
+    @Enhancement(types = Object.class, /*withAnnotations=AiService.class,*/ withSubtypes = true)
+	@Priority(20)
+	public void executeMethodConfigEnhancement(MethodConfig config) throws ClassNotFoundException {
+//		LOGGER.info("*** Execute MethodConfig Enhancement ***");
+		MethodInfo info = config.info();
+		for (ParameterInfo paramInfo : info.parameters()) {
+			if (paramInfo.type().isClass()) {
+				ClassType classType = paramInfo.type().asClass();
+				ClassInfo classInfo = classType.declaration();
+				detectAiService(classInfo);
+			}
+		}
+	}
 
 	@Enhancement(types = Object.class, /*withAnnotations=AiService.class,*/ withSubtypes = true)
-	@Priority(20)
+	@Priority(30)
 	public void executeFieldConfigEnhancement(FieldConfig config) throws ClassNotFoundException {
 //		LOGGER.info("*** Execute FieldConfig Enhancement ***");
 		FieldInfo info = config.info();
@@ -58,13 +74,10 @@ public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatib
 //			LOGGER.info("Analyze Enhancement " + classInfo.name());
 			AnnotationInfo annotationInfo = classInfo.annotation(AiService.class);
 			if (annotationInfo != null) {
-				LOGGER.info("Analyze Enhancement " + classInfo.name() + " with AnnotationInfo " + annotationInfo.name());
+				LOGGER.info("Detected AIService of with type " + classInfo.name() + " with AnnotationInfo " + annotationInfo.name());
 				Class<?> rawType = Reflections.getRawType(Classes.getClass(classInfo.name(), false));
 				if (!detectedAIServicesDeclaredInterfaces.contains(rawType))
 					detectedAIServicesDeclaredInterfaces.add(rawType);
-//				AiService aiServiceAnnotation = Annotations.findAnnotation(rawType, AiService.class);
-//				detectedTools.addAll(Arrays.stream(aiServiceAnnotation.tools()).map(Class::getName).collect(Collectors.toSet()));
-//	            LOGGER.info("Current detected tools : " + detectedTools);
 			}
 		}
 	}
@@ -81,7 +94,7 @@ public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatib
            					  .createWith(AIServiceCreator.class)
 			                  .type(interfaceClass)
 			                  .scope(annotation.scope())
-			                  .name(Strings.uncapitalize(interfaceClass.getName()) + "Proxy")
+			                  .name(Strings.uncapitalize(interfaceClass.getSimpleName()) + "ServiceProxy")
 			                  .withParam(PARAM_INTERFACE_CLASS, interfaceClass);
         }
     }
