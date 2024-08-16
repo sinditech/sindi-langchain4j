@@ -74,7 +74,7 @@ public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatib
 //			LOGGER.info("Analyze Enhancement " + classInfo.name());
 			AnnotationInfo annotationInfo = classInfo.annotation(AiService.class);
 			if (annotationInfo != null) {
-				LOGGER.info("Detected AIService of with type " + classInfo.name() + " with AnnotationInfo " + annotationInfo.name());
+				LOGGER.info("Detected AIService of type " + classInfo.name() + " with AnnotationInfo " + annotationInfo.name());
 				Class<?> rawType = Reflections.getRawType(Classes.getClass(classInfo.name(), false));
 				if (!detectedAIServicesDeclaredInterfaces.contains(rawType))
 					detectedAIServicesDeclaredInterfaces.add(rawType);
