@@ -121,5 +121,6 @@
 		<module>sindi-langchain4j-jakartaee</module>
 		<module>sindi-langchain4j-vertex-ai-gemini-jakartaee</module>
 		<module>sindi-langchain4j-hugging-face-jakartaee</module>
+		<module>sindi-langchain-open-ai-jakartaee</module>
 	</modules>
 </project>
