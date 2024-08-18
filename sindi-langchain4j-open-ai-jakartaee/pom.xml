@@ -7,7 +7,7 @@
 		<artifactId>sindi-langchain4j</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>sindi-langchain-open-ai</artifactId>
+	<artifactId>sindi-langchain4j-open-ai-jakartaee</artifactId>
 	
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-api -->
