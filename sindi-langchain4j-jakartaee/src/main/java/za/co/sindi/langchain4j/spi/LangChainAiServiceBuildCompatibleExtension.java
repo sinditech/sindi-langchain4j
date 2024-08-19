@@ -51,6 +51,7 @@ public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatib
 			if (paramInfo.type().isClass()) {
 				ClassType classType = paramInfo.type().asClass();
 				ClassInfo classInfo = classType.declaration();
+//				LOGGER.info("*** Execute MethodConfig Enhancement ***");
 				detectAiService(classInfo);
 			}
 		}
@@ -65,6 +66,7 @@ public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatib
 		if (info.type().isClass()) {
 			ClassType classType = info.type().asClass();
 			ClassInfo classInfo = classType.declaration();
+//			LOGGER.info("*** Execute FieldConfig Enhancement ***");
 			detectAiService(classInfo);
 		}
 	}
@@ -74,10 +76,11 @@ public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatib
 //			LOGGER.info("Analyze Enhancement " + classInfo.name());
 			AnnotationInfo annotationInfo = classInfo.annotation(AiService.class);
 			if (annotationInfo != null) {
-				LOGGER.info("Detected AIService of type " + classInfo.name() + " with AnnotationInfo " + annotationInfo.name());
 				Class<?> rawType = Reflections.getRawType(Classes.getClass(classInfo.name(), false));
-				if (!detectedAIServicesDeclaredInterfaces.contains(rawType))
+				if (!detectedAIServicesDeclaredInterfaces.contains(rawType)) {
+					LOGGER.info("Detected AIService of type " + classInfo.name() + " with AnnotationInfo " + annotationInfo.name());
 					detectedAIServicesDeclaredInterfaces.add(rawType);
+				}
 			}
 		}
 	}
