@@ -15,11 +15,14 @@ import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
 import jakarta.enterprise.inject.spi.ProcessInjectionPoint;
+import jakarta.enterprise.inject.spi.WithAnnotations;
 import za.co.sindi.commons.utils.Annotations;
 import za.co.sindi.commons.utils.Reflections;
 import za.co.sindi.commons.utils.Strings;
@@ -31,15 +34,20 @@ import za.co.sindi.commons.utils.Strings;
 public class LangChainAiServiceExtension implements Extension {
 
 	private static final Logger LOGGER = Logger.getLogger(LangChainAiServiceExtension.class.getName());
-	
+	private Set<AnnotatedType<?>> annotatedTypes;
 	private Set<InjectionPoint> componentInjectionPoints;
-
     private Set<InjectionPoint> instanceInjectionPoints;
 
     public LangChainAiServiceExtension() {
+    	this.annotatedTypes = new HashSet<>();
         this.componentInjectionPoints = new HashSet<>();
         this.instanceInjectionPoints = new HashSet<>();
     }
+    
+    public <T> void processAnnotatedType(@Observes @WithAnnotations(AiService.class) ProcessAnnotatedType<T> pat) {
+    	LOGGER.info("Scanning type: " + pat.getAnnotatedType().getJavaClass().getName());
+    	annotatedTypes.add(pat.getAnnotatedType());
+     }
 	
 	public void processInjectionPoints(@Observes ProcessInjectionPoint<?, ?> event) {
         if (event.getInjectionPoint().getBean() == null) {
@@ -56,7 +64,17 @@ public class LangChainAiServiceExtension implements Extension {
 //		InjectionPoint ip = componentInjectionPoints.iterator().next();
 //		LOGGER.info("" + ip.getMember().getDeclaringClass() + " - " + ip.getClass() + " - " + ip.getType());
 //		LOGGER.info("Raw Type: " + Reflections.getRawType(ip.getType()));
-//		
+		
+		for (AnnotatedType<?> annotatedType : annotatedTypes) {
+			AiService aiServiceAnnotation = Annotations.findAnnotation(annotatedType.getJavaClass(), AiService.class);
+			
+			abd.addBean()
+				.scope(aiServiceAnnotation.scope())
+				.types(annotatedType.getJavaClass())
+				.name(Strings.uncapitalize(annotatedType.getJavaClass().getSimpleName()) + "ServiceProxy")
+				.produceWith(c -> createAiServices(aiServiceAnnotation, annotatedType.getJavaClass(), beanManager));
+		}
+		
 		for (InjectionPoint ip : componentInjectionPoints) {
 			Class<?> rawType = Reflections.getRawType(ip.getType());
 			if (!rawType.isInterface()) continue;

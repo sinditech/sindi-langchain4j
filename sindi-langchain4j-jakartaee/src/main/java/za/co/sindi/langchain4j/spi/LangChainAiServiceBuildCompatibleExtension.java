@@ -34,15 +34,15 @@ public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatib
 	private static final Set<Class<?>> detectedAIServicesDeclaredInterfaces = new HashSet<>();
     public static final String PARAM_INTERFACE_CLASS = "interfaceClass";
 
-    @Enhancement(types = Object.class, withSubtypes = true)
+    @Enhancement(types = Object.class, withAnnotations=AiService.class, withSubtypes = true)
     @Priority(10)
-    public void executeClassConfigEnhancement(ClassConfig classConfig) throws ClassNotFoundException {
+    public void executeAiServiceConfigEnhancement(ClassConfig classConfig) throws ClassNotFoundException {
 //    	LOGGER.info("*** Execute ClassConfig Enhancement ***");
-        ClassInfo classInfo = classConfig.info();
+    	ClassInfo classInfo = classConfig.info();
         detectAiService(classInfo);
     }
     
-    @Enhancement(types = Object.class, /*withAnnotations=AiService.class,*/ withSubtypes = true)
+    @Enhancement(types = Object.class, withSubtypes = true)
 	@Priority(20)
 	public void executeMethodConfigEnhancement(MethodConfig config) throws ClassNotFoundException {
 //		LOGGER.info("*** Execute MethodConfig Enhancement ***");
@@ -57,7 +57,7 @@ public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatib
 		}
 	}
 
-	@Enhancement(types = Object.class, /*withAnnotations=AiService.class,*/ withSubtypes = true)
+	@Enhancement(types = Object.class, withSubtypes = true)
 	@Priority(30)
 	public void executeFieldConfigEnhancement(FieldConfig config) throws ClassNotFoundException {
 //		LOGGER.info("*** Execute FieldConfig Enhancement ***");
