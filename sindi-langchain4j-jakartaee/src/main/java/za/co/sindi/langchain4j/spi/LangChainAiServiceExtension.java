@@ -66,8 +66,8 @@ public class LangChainAiServiceExtension implements Extension {
 			abd.addBean()
 				.scope(aiServiceAnnotation.scope())
 				.types(rawType)
-				.name(Strings.uncapitalize(rawType.getSimpleName()) + "Proxy")
-				.createWith(c -> createAiServices(aiServiceAnnotation, rawType, beanManager));
+				.name(Strings.uncapitalize(rawType.getSimpleName()) + "ServiceProxy")
+				.produceWith(c -> createAiServices(aiServiceAnnotation, rawType, beanManager));
 			
 			LOGGER.info("Added AiService of raw type '" + rawType.getName()  + "' for component injection.");
 		}
@@ -81,30 +81,30 @@ public class LangChainAiServiceExtension implements Extension {
 			abd.addBean()
 				.scope(aiServiceAnnotation.scope())
 				.types(rawType)
-				.name(Strings.uncapitalize(rawType.getSimpleName()) + "Proxy")
+				.name(Strings.uncapitalize(rawType.getSimpleName()) + "ServiceProxy")
 				.produceWith(c -> createAiServices(aiServiceAnnotation, rawType, beanManager));
 			
 			LOGGER.info("Added AiService of raw type '" + rawType.getName()  + "' for instance injection.");
 		}
 	}
 	
-	private AiServices<?> createAiServices(final AiService aiServiceAnnotation, final Class<?> interfaceClass, BeanManager beanManager) {
+	private Object createAiServices(final AiService aiServiceAnnotation, final Class<?> interfaceClass, BeanManager beanManager) {
 		ChatLanguageModel chatLanguageModel = getChatLanguageModel(aiServiceAnnotation, beanManager);
         ContentRetriever contentRetriever = getContentRetriever(aiServiceAnnotation, beanManager);
 		
 		AiServices<?> aiServices = AiServices.builder(interfaceClass)
                 .chatLanguageModel(chatLanguageModel);
-      	if (annotation.tools() != null && annotation.tools().length > 0) {
-        	aiServices.tools(Stream.of(annotation.tools())
+      	if (aiServiceAnnotation.tools() != null && aiServiceAnnotation.tools().length > 0) {
+        	aiServices.tools(Stream.of(aiServiceAnnotation.tools())
                         .map(c -> getBean(null, c, beanManager))
                         .collect(Collectors.toList()));
         }
-        aiServices.chatMemory(MessageWindowChatMemory.withMaxMessages(annotation.chatMemoryMaxMessages()));
+        aiServices.chatMemory(MessageWindowChatMemory.withMaxMessages(aiServiceAnnotation.chatMemoryMaxMessages()));
            
         if (contentRetriever != null)
             aiServices.contentRetriever(contentRetriever);
 
-        return (AiServices<?>) aiServices.build();
+        return aiServices.build();
 	}
 	
 	@SuppressWarnings("unchecked")
