@@ -36,7 +36,7 @@ public class LangChainAiServiceExtension implements Extension {
 
     private Set<InjectionPoint> instanceInjectionPoints;
 
-    LangChainAiServiceExtension() {
+    public LangChainAiServiceExtension() {
         this.componentInjectionPoints = new HashSet<>();
         this.instanceInjectionPoints = new HashSet<>();
     }
