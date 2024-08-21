@@ -46,6 +46,14 @@ public class LangChainAiServiceExtension implements Extension {
     
     public <T> void processAnnotatedType(@Observes @WithAnnotations(AiService.class) ProcessAnnotatedType<T> pat) {
     	LOGGER.info("Scanning type: " + pat.getAnnotatedType().getJavaClass().getName());
+    	if (pat.getAnnotatedType().getJavaClass().isInterface()) {
+            LOGGER.info("processAnnotatedType register " + pat.getAnnotatedType().getJavaClass().getName());
+            annotatedTypes.add(pat.getAnnotatedType());
+        } else {
+            LOGGER.warning("processAnnotatedType reject " + pat.getAnnotatedType().getJavaClass().getName()
+                    + " which is not an interface");
+            pat.veto();
+        }
     	annotatedTypes.add(pat.getAnnotatedType());
      }
 	

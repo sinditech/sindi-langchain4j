@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>za.co.sindi</groupId>
+		<artifactId>sindi-langchain4j</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>sindi-langchain4j-jakartaee-buildcompatible-extension</artifactId>
+	
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-api -->
+		<dependency>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.eclipse.microprofile</groupId>
+			<artifactId>microprofile</artifactId>
+			<type>pom</type>
+		</dependency>
+			
+		<dependency>
+		    <groupId>dev.langchain4j</groupId>
+		    <artifactId>langchain4j</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>za.co.sindi</groupId>
+			<artifactId>sindi-commons</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>za.co.sindi</groupId>
+			<artifactId>sindi-langchain4j-jakartaee-core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>
