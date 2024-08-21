@@ -126,7 +126,7 @@ public class LangChainAiServiceExtension implements Extension {
                         .collect(Collectors.toList()));
         }
         aiServices.chatMemory(MessageWindowChatMemory.withMaxMessages(aiServiceAnnotation.chatMemoryMaxMessages()));
-           
+        
         if (contentRetriever != null)
             aiServices.contentRetriever(contentRetriever);
 
