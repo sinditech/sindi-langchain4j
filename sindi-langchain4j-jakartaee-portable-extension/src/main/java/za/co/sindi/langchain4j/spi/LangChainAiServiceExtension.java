@@ -81,6 +81,8 @@ public class LangChainAiServiceExtension implements Extension {
 				.types(annotatedType.getJavaClass())
 				.name(Strings.uncapitalize(annotatedType.getJavaClass().getSimpleName()) + "ServiceProxy")
 				.produceWith(c -> createAiServices(aiServiceAnnotation, annotatedType.getJavaClass(), beanManager));
+			
+			LOGGER.info("Added AiService of interface '" + annotatedType.getJavaClass().getName()  + "', discovered during processAnnotatedType(), for component injection.");
 		}
 		
 		for (InjectionPoint ip : componentInjectionPoints) {
