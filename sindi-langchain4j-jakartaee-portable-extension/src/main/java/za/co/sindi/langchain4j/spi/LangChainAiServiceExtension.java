@@ -68,7 +68,7 @@ public class LangChainAiServiceExtension implements Extension {
     }
 	
 	public void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager beanManager) {
-		LOGGER.info("finished the scanning process");
+		LOGGER.info("Finished the scanning process.");
 //		InjectionPoint ip = componentInjectionPoints.iterator().next();
 //		LOGGER.info("" + ip.getMember().getDeclaringClass() + " - " + ip.getClass() + " - " + ip.getType());
 //		LOGGER.info("Raw Type: " + Reflections.getRawType(ip.getType()));
