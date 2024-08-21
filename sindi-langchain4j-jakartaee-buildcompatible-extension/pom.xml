@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>za.co.sindi</groupId>
 			<artifactId>sindi-langchain4j-jakartaee-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>
