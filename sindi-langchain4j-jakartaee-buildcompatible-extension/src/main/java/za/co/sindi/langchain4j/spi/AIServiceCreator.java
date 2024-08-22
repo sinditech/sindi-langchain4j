@@ -20,7 +20,7 @@ public class AIServiceCreator implements SyntheticBeanCreator<Object> {
 
     @Override
     public Object create(Instance<Object> lookup, Parameters params) {
-        Class<?> interfaceClass = params.get(LangChainAiServiceBuildCompatibleExtension.PARAM_INTERFACE_CLASS, Class.class);
+        Class<?> interfaceClass = params.get(LangChain4JAiServiceBuildCompatibleExtension.PARAM_INTERFACE_CLASS, Class.class);
         AiService annotation = interfaceClass.getAnnotation(AiService.class);
 
         CDI<Object> cdi = CDI.current();

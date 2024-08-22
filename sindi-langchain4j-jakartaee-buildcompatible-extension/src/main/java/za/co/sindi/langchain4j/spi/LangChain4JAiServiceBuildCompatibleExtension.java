@@ -28,9 +28,9 @@ import za.co.sindi.commons.utils.Strings;
  * @author Buhake Sindi
  * @since 08 August 2024
  */
-public class LangChainAiServiceBuildCompatibleExtension implements BuildCompatibleExtension {
+public class LangChain4JAiServiceBuildCompatibleExtension implements BuildCompatibleExtension {
 
-	private static final Logger LOGGER = Logger.getLogger(LangChainAiServiceBuildCompatibleExtension.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(LangChain4JAiServiceBuildCompatibleExtension.class.getName());
 	private static final Set<Class<?>> detectedAIServicesDeclaredInterfaces = new HashSet<>();
     public static final String PARAM_INTERFACE_CLASS = "interfaceClass";
 

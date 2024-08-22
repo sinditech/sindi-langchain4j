@@ -23,6 +23,7 @@ import jakarta.enterprise.inject.spi.InjectionPoint;
 import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
 import jakarta.enterprise.inject.spi.ProcessInjectionPoint;
 import jakarta.enterprise.inject.spi.WithAnnotations;
+import jakarta.enterprise.inject.spi.configurator.BeanConfigurator;
 import za.co.sindi.commons.utils.Annotations;
 import za.co.sindi.commons.utils.Reflections;
 import za.co.sindi.commons.utils.Strings;
@@ -31,14 +32,14 @@ import za.co.sindi.commons.utils.Strings;
  * @author Buhake Sindi
  * @since 11 August 2024
  */
-public class LangChainAiServiceExtension implements Extension {
+public class LangChain4JAiServiceExtension implements Extension {
 
-	private static final Logger LOGGER = Logger.getLogger(LangChainAiServiceExtension.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(LangChain4JAiServiceExtension.class.getName());
 	private Set<AnnotatedType<?>> annotatedTypes;
 	private Set<InjectionPoint> componentInjectionPoints;
     private Set<InjectionPoint> instanceInjectionPoints;
 
-    public LangChainAiServiceExtension() {
+    public LangChain4JAiServiceExtension() {
     	this.annotatedTypes = new HashSet<>();
         this.componentInjectionPoints = new HashSet<>();
         this.instanceInjectionPoints = new HashSet<>();
@@ -74,46 +75,39 @@ public class LangChainAiServiceExtension implements Extension {
 //		LOGGER.info("Raw Type: " + Reflections.getRawType(ip.getType()));
 		
 		for (AnnotatedType<?> annotatedType : annotatedTypes) {
+			LOGGER.info("Adding AiService of interface '" + annotatedType.getJavaClass().getName()  + "', discovered during processAnnotatedType(), for component injection.");
 			AiService aiServiceAnnotation = Annotations.findAnnotation(annotatedType.getJavaClass(), AiService.class);
-			
-			abd.addBean()
-				.scope(aiServiceAnnotation.scope())
-				.types(annotatedType.getJavaClass())
-				.name(Strings.uncapitalize(annotatedType.getJavaClass().getSimpleName()) + "ServiceProxy")
-				.produceWith(c -> createAiServices(aiServiceAnnotation, annotatedType.getJavaClass(), beanManager));
-			
-			LOGGER.info("Added AiService of interface '" + annotatedType.getJavaClass().getName()  + "', discovered during processAnnotatedType(), for component injection.");
+			addBean(abd, beanManager, annotatedType.getJavaClass(), aiServiceAnnotation, false);
 		}
 		
 		for (InjectionPoint ip : componentInjectionPoints) {
 			Class<?> rawType = Reflections.getRawType(ip.getType());
-			if (!rawType.isInterface()) continue;
 			AiService aiServiceAnnotation = Annotations.findAnnotation(rawType, AiService.class);
-			if (aiServiceAnnotation == null) continue;
-			
-			abd.addBean()
-				.scope(aiServiceAnnotation.scope())
-				.types(rawType)
-				.name(Strings.uncapitalize(rawType.getSimpleName()) + "ServiceProxy")
-				.produceWith(c -> createAiServices(aiServiceAnnotation, rawType, beanManager));
-			
-			LOGGER.info("Added AiService of raw type '" + rawType.getName()  + "' for component injection.");
+			addBean(abd, beanManager, rawType, aiServiceAnnotation, false);
 		}
 		
 		for (InjectionPoint ip : instanceInjectionPoints) {
 			Class<?> rawType = Reflections.getRawType(ip.getType());
-			if (!rawType.isInterface()) continue;
 			AiService aiServiceAnnotation = Annotations.findAnnotation(rawType, AiService.class);
-			if (aiServiceAnnotation == null) continue;
-			
-			abd.addBean()
-				.scope(aiServiceAnnotation.scope())
-				.types(rawType)
-				.name(Strings.uncapitalize(rawType.getSimpleName()) + "ServiceProxy")
-				.produceWith(c -> createAiServices(aiServiceAnnotation, rawType, beanManager));
-			
-			LOGGER.info("Added AiService of raw type '" + rawType.getName()  + "' for instance injection.");
+			addBean(abd, beanManager, rawType, aiServiceAnnotation, true);
 		}
+	}
+	
+	private void addBean(AfterBeanDiscovery abd, BeanManager beanManager, Class<?> interfaceClass, AiService aiServiceAnnotation, boolean produce) {
+		if (!interfaceClass.isInterface() || aiServiceAnnotation == null) return ;
+		
+		BeanConfigurator<Object> bc = abd.addBean()
+				.scope(aiServiceAnnotation.scope())
+				.types(interfaceClass)
+				.name(Strings.uncapitalize(interfaceClass.getSimpleName()) + "ServiceProxy");
+		
+		if (produce) {
+			bc.produceWith(c -> createAiServices(aiServiceAnnotation, interfaceClass, beanManager));
+		} else {
+			bc.createWith(c -> createAiServices(aiServiceAnnotation, interfaceClass, beanManager));
+		}
+		
+		LOGGER.info("Added AiService of interface type '" + interfaceClass.getName()  + "' for " + (produce ? "instance" : "component")  + " injection.");
 	}
 	
 	private Object createAiServices(final AiService aiServiceAnnotation, final Class<?> interfaceClass, BeanManager beanManager) {
