@@ -1,4 +1,4 @@
-package za.co.sindi.langchain4j.spi;
+package za.co.sindi.langchain4j.spi.cdi.bce;
 
 import java.util.logging.Logger;
 import java.util.stream.Collectors;

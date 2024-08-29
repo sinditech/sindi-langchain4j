@@ -1,4 +1,4 @@
-package za.co.sindi.langchain4j.spi;
+package za.co.sindi.langchain4j.spi.cdi.extension;
 
 import java.util.HashSet;
 import java.util.Set;
