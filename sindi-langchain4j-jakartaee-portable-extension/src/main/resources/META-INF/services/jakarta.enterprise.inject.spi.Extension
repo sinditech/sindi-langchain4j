@@ -1,1 +1,1 @@
-za.co.sindi.langchain4j.spi.LangChain4JAiServiceExtension
+za.co.sindi.langchain4j.spi.cdi.extension.LangChain4JAiServiceExtension
