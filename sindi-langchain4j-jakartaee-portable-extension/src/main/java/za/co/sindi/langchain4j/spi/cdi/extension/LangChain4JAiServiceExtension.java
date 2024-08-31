@@ -75,7 +75,7 @@ public class LangChain4JAiServiceExtension implements Extension {
 //		LOGGER.info("Raw Type: " + Reflections.getRawType(ip.getType()));
 		
 		for (AnnotatedType<?> annotatedType : annotatedTypes) {
-			LOGGER.info("Adding AiService of interface '" + annotatedType.getJavaClass().getName()  + "', discovered during processAnnotatedType(), for component injection.");
+			LOGGER.info("Adding @AiService of interface '" + annotatedType.getJavaClass().getName()  + "', discovered during processAnnotatedType(), for component injection.");
 			AiService aiServiceAnnotation = Annotations.findAnnotation(annotatedType.getJavaClass(), AiService.class);
 			addBean(abd, beanManager, annotatedType.getJavaClass(), aiServiceAnnotation, false);
 		}
@@ -107,7 +107,7 @@ public class LangChain4JAiServiceExtension implements Extension {
 			bc.createWith(c -> createAiServices(aiServiceAnnotation, interfaceClass, beanManager));
 		}
 		
-		LOGGER.info("Added AiService of interface type '" + interfaceClass.getName()  + "' for " + (produce ? "instance" : "component")  + " injection.");
+		LOGGER.info("Added @AiService of interface type '" + interfaceClass.getName()  + "' for " + (produce ? "instance" : "component")  + " injection.");
 	}
 	
 	private Object createAiServices(final AiService aiServiceAnnotation, final Class<?> interfaceClass, BeanManager beanManager) {
