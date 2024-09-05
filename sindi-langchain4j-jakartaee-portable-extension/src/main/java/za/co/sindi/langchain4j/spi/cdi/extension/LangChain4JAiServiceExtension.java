@@ -1,5 +1,8 @@
 package za.co.sindi.langchain4j.spi.cdi.extension;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -35,80 +38,64 @@ import za.co.sindi.commons.utils.Strings;
 public class LangChain4JAiServiceExtension implements Extension {
 
 	private static final Logger LOGGER = Logger.getLogger(LangChain4JAiServiceExtension.class.getName());
-	private Set<AnnotatedType<?>> annotatedTypes;
-	private Set<InjectionPoint> componentInjectionPoints;
-    private Set<InjectionPoint> instanceInjectionPoints;
+	private static final Set<Class<?>> detectedAIServicesDeclaredInterfaces = new HashSet<>();
 
-    public LangChain4JAiServiceExtension() {
-    	this.annotatedTypes = new HashSet<>();
-        this.componentInjectionPoints = new HashSet<>();
-        this.instanceInjectionPoints = new HashSet<>();
-    }
-    
     public <T> void processAnnotatedType(@Observes @WithAnnotations(AiService.class) ProcessAnnotatedType<T> pat) {
     	LOGGER.info("Scanning type: " + pat.getAnnotatedType().getJavaClass().getName());
     	if (pat.getAnnotatedType().getJavaClass().isInterface()) {
             LOGGER.info("processAnnotatedType register " + pat.getAnnotatedType().getJavaClass().getName());
-            annotatedTypes.add(pat.getAnnotatedType());
+            detectedAIServicesDeclaredInterfaces.add(pat.getAnnotatedType().getJavaClass());
         } else {
             LOGGER.warning("processAnnotatedType reject " + pat.getAnnotatedType().getJavaClass().getName()
                     + " which is not an interface");
             pat.veto();
         }
-    	annotatedTypes.add(pat.getAnnotatedType());
      }
 	
 	public void processInjectionPoints(@Observes ProcessInjectionPoint<?, ?> event) {
         if (event.getInjectionPoint().getBean() == null) {
-            componentInjectionPoints.add(event.getInjectionPoint());
+        	Class<?> rawType = Reflections.getRawType(event.getInjectionPoint().getType());
+        	if (classSatisfies(rawType, AiService.class))
+        		detectedAIServicesDeclaredInterfaces.add(rawType);
         }
         
         if (Instance.class.equals(Reflections.getRawType(event.getInjectionPoint().getType()))) {
-            instanceInjectionPoints.add(event.getInjectionPoint());
+        	Class<?> parameterizedType = Reflections.getRawType(getFacadeType(event.getInjectionPoint()));
+        	if (classSatisfies(parameterizedType, AiService.class))
+        		detectedAIServicesDeclaredInterfaces.add(parameterizedType);
         }
     }
 	
-	public void afterBeanDiscovery(@Observes AfterBeanDiscovery abd, BeanManager beanManager) {
+	public void afterBeanDiscovery(@Observes AfterBeanDiscovery afterBeanDiscovery, BeanManager beanManager) {
 		LOGGER.info("Finished the scanning process.");
 //		InjectionPoint ip = componentInjectionPoints.iterator().next();
 //		LOGGER.info("" + ip.getMember().getDeclaringClass() + " - " + ip.getClass() + " - " + ip.getType());
 //		LOGGER.info("Raw Type: " + Reflections.getRawType(ip.getType()));
 		
-		for (AnnotatedType<?> annotatedType : annotatedTypes) {
-			LOGGER.info("Adding @AiService of interface '" + annotatedType.getJavaClass().getName()  + "', discovered during processAnnotatedType(), for component injection.");
-			AiService aiServiceAnnotation = Annotations.findAnnotation(annotatedType.getJavaClass(), AiService.class);
-			addBean(abd, beanManager, annotatedType.getJavaClass(), aiServiceAnnotation, false);
-		}
-		
-		for (InjectionPoint ip : componentInjectionPoints) {
-			Class<?> rawType = Reflections.getRawType(ip.getType());
-			AiService aiServiceAnnotation = Annotations.findAnnotation(rawType, AiService.class);
-			addBean(abd, beanManager, rawType, aiServiceAnnotation, false);
-		}
-		
-		for (InjectionPoint ip : instanceInjectionPoints) {
-			Class<?> rawType = Reflections.getRawType(ip.getType());
-			AiService aiServiceAnnotation = Annotations.findAnnotation(rawType, AiService.class);
-			addBean(abd, beanManager, rawType, aiServiceAnnotation, true);
-		}
+		for (Class<?> aiServiceClass : detectedAIServicesDeclaredInterfaces) {
+            LOGGER.info("afterBeanDiscovery create synthetic :  " + aiServiceClass.getName());
+            final AiService annotation = Annotations.findAnnotation(aiServiceClass, AiService.class);
+            afterBeanDiscovery.addBean()
+                    .types(aiServiceClass)
+                    .scope(annotation.scope())
+                    .name(Strings.uncapitalize(aiServiceClass.getSimpleName()) + "ServiceProxy") //Without this, the container won't create a CreationalContext
+                    .createWith(creationalContext -> createAiServices(annotation, aiServiceClass, beanManager));
+        }
 	}
 	
-	private void addBean(AfterBeanDiscovery abd, BeanManager beanManager, Class<?> interfaceClass, AiService aiServiceAnnotation, boolean produce) {
-		if (!interfaceClass.isInterface() || aiServiceAnnotation == null) return ;
-		
-		BeanConfigurator<Object> bc = abd.addBean()
-				.scope(aiServiceAnnotation.scope())
-				.types(interfaceClass)
-				.name(Strings.uncapitalize(interfaceClass.getSimpleName()) + "ServiceProxy");
-		
-		if (produce) {
-			bc.produceWith(c -> createAiServices(aiServiceAnnotation, interfaceClass, beanManager));
-		} else {
-			bc.createWith(c -> createAiServices(aiServiceAnnotation, interfaceClass, beanManager));
-		}
-		
-		LOGGER.info("Added @AiService of interface type '" + interfaceClass.getName()  + "' for " + (produce ? "instance" : "component")  + " injection.");
+	private <T extends Annotation> boolean classSatisfies(Class<?> clazz, Class<T> annotationClass) {
+		if (!clazz.isInterface()) return false;
+		T annotation = Annotations.findAnnotation(clazz, annotationClass);
+		return (annotation != null);
 	}
+	
+	private Type getFacadeType(InjectionPoint injectionPoint) {
+        Type genericType = injectionPoint.getType();
+        if (genericType instanceof ParameterizedType) {
+            return ((ParameterizedType) genericType).getActualTypeArguments()[0];
+        }
+        return null;
+    }
 	
 	private Object createAiServices(final AiService aiServiceAnnotation, final Class<?> interfaceClass, BeanManager beanManager) {
 		ChatLanguageModel chatLanguageModel = getChatLanguageModel(aiServiceAnnotation, beanManager);
