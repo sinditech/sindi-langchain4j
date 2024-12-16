@@ -21,11 +21,13 @@
 			<artifactId>microprofile</artifactId>
 			<type>pom</type>
 		</dependency>
-			
+		
+		<!--
 		<dependency>
 		    <groupId>dev.langchain4j</groupId>
 		    <artifactId>langchain4j</artifactId>
 		</dependency>
+		-->
 		
 		<dependency>
 			<groupId>za.co.sindi</groupId>

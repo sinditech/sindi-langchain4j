@@ -1,6 +1,7 @@
 package za.co.sindi.langchain4j.spi.cdi.extension;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -9,8 +10,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import dev.langchain4j.memory.chat.MessageWindowChatMemory;
+import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.moderation.ModerationModel;
+import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.sindi.AiService;
@@ -95,28 +99,69 @@ public class LangChain4JAiServiceExtension implements Extension {
         return null;
     }
 	
-	private Object createAiServices(final AiService aiServiceAnnotation, final Class<?> interfaceClass, BeanManager beanManager) {
+	private <T> T createAiServices(final AiService aiServiceAnnotation, final Class<T> interfaceClass, BeanManager beanManager) {
 		ChatLanguageModel chatLanguageModel = getChatLanguageModel(aiServiceAnnotation, beanManager);
+		StreamingChatLanguageModel streamingChatLanguageModel = getStreamingChatLanguageModel(aiServiceAnnotation, beanManager);
         ContentRetriever contentRetriever = getContentRetriever(aiServiceAnnotation, beanManager);
 		
-		AiServices<?> aiServices = AiServices.builder(interfaceClass)
-                .chatLanguageModel(chatLanguageModel);
-      	if (aiServiceAnnotation.tools() != null && aiServiceAnnotation.tools().length > 0) {
+        AiServices<T> aiServices = AiServices.builder(interfaceClass);
+        if (chatLanguageModel != null) 
+        	aiServices.chatLanguageModel(chatLanguageModel);
+        
+        if (streamingChatLanguageModel != null) 
+        	aiServices.streamingChatLanguageModel(streamingChatLanguageModel);
+    	
+        if (aiServiceAnnotation.tools() != null && aiServiceAnnotation.tools().length > 0) {
         	aiServices.tools(Stream.of(aiServiceAnnotation.tools())
-                        .map(c -> getBean(null, c, beanManager))
+                        .map(c -> {
+							try {
+								return c.getConstructor((Class<?>[])null).newInstance((Object[])null);
+							} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+									| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+								// TODO Auto-generated catch block
+								throw new RuntimeException(e);
+							}
+						} /* getBean(c, beanManager) */)
                         .collect(Collectors.toList()));
         }
-        aiServices.chatMemory(MessageWindowChatMemory.withMaxMessages(aiServiceAnnotation.chatMemoryMaxMessages()));
-        
         if (contentRetriever != null)
             aiServices.contentRetriever(contentRetriever);
+        
+        ChatMemoryProvider chatMemoryProvider = getChatMemoryProvider(aiServiceAnnotation, beanManager);
+        if (chatMemoryProvider != null) {
+            aiServices.chatMemoryProvider(chatMemoryProvider);
+        } /* else {
+        	aiServices.chatMemory(MessageWindowChatMemory.withMaxMessages(aiServiceAnnotation.chatMemoryMaxMessages()));
+        } */
+
+        ModerationModel moderationModel = getModerationModel(aiServiceAnnotation, beanManager);
+        if (moderationModel != null) {
+            aiServices.moderationModel(moderationModel);
+        }
+        
+        RetrievalAugmentor retrievalAugmentor = getRetrievalAugmentor(aiServiceAnnotation, beanManager);
+        if (retrievalAugmentor != null) {
+        	aiServices.retrievalAugmentor(retrievalAugmentor);
+        }
 
         return aiServices.build();
 	}
 	
 	@SuppressWarnings("unchecked")
+	private static <T> T getBean(Class<T> beanType, BeanManager beanManager) {
+		Bean<?> bean = beanManager.resolve(beanManager.getBeans(beanType));
+		if (bean == null) return null;
+		
+		CreationalContext<?> context = beanManager.createCreationalContext(bean);
+		return (T) beanManager.getReference(bean, beanType, context);
+	}
+	
+	@SuppressWarnings("unchecked")
 	private static <T> T getBean(String beanName, Class<T> beanType, BeanManager beanManager) {
-		Bean<?> bean = beanManager.resolve(!Strings.isNullOrEmpty(beanName) ?  beanManager.getBeans(beanName) : beanManager.getBeans(beanType));
+		if (beanName == null || beanName.isBlank()) return null;
+		if ("#default".equals(beanName)) return getBean(beanType, beanManager);
+		
+		Bean<?> bean = beanManager.resolve(beanManager.getBeans(beanName));
 		if (bean == null) return null;
 		
 		CreationalContext<?> context = beanManager.createCreationalContext(bean);
@@ -126,8 +171,64 @@ public class LangChain4JAiServiceExtension implements Extension {
 	private static ChatLanguageModel getChatLanguageModel(AiService annotation, BeanManager beanManager) {
 		return getBean(annotation.chatModel(), ChatLanguageModel.class, beanManager);
     }
+	
+	private static StreamingChatLanguageModel getStreamingChatLanguageModel(AiService annotation, BeanManager beanManager) {
+		return getBean(annotation.streamingChatModel(), StreamingChatLanguageModel.class, beanManager);
+    }
 
     private static ContentRetriever getContentRetriever(AiService annotation, BeanManager beanManager) {
     	return getBean(annotation.contentRetriever(), ContentRetriever.class, beanManager);
     }
+    
+    private static ModerationModel getModerationModel(AiService annotation, BeanManager beanManager) {
+    	return getBean(annotation.moderationModel(), ModerationModel.class, beanManager);
+    }
+    
+    private static ChatMemoryProvider getChatMemoryProvider(AiService annotation, BeanManager beanManager) {
+    	return getBean(annotation.chatMemoryProvider(), ChatMemoryProvider.class, beanManager);
+    }
+    
+    private static RetrievalAugmentor getRetrievalAugmentor(AiService annotation, BeanManager beanManager) {
+    	return getBean(annotation.retrievalAugmentor(), RetrievalAugmentor.class, beanManager);
+    }
+    
+//    private static ModerationModel findModerationModel(AiService annotation, Class<?> interfaceClass, BeanManager beanManager) {
+        //Get all methods.
+//        for (Method method : interfaceClass.getMethods()) {
+//            Moderate moderate = method.getAnnotation(Moderate.class);
+//            if (moderate != null) {
+//            	return getBean(annotation.moderationModel(), ModerationModel.class, beanManager);
+//            }
+//        }
+//
+//        return null;
+//    }
+
+//    private static ChatMemoryProvider createChatMemoryProvider(AiService annotation, Class<?> interfaceClass, BeanManager beanManager) {
+//    	if (!annotation.chatMemoryProvider().isBlank()) {
+//    		return getBean(annotation.chatMemoryProvider(), ChatMemoryProvider.class, beanManager);
+//    	}
+//    	
+//        //Get all methods.
+//        for (Method method : interfaceClass.getMethods()) {
+//            for (Parameter parameter : method.getParameters()) {
+//                MemoryId memoryIdAnnotation = parameter.getAnnotation(MemoryId.class);
+//                if (memoryIdAnnotation != null) {
+//                	ChatMemoryStore chatMemoryStore = getBean(annotation.chatMemoryStore(), ChatMemoryStore.class, beanManager);
+//                    if (chatMemoryStore == null) {
+//                        throw new IllegalStateException("Unable to resolve a ChatMemoryStore for your ChatMemoryProvider.");
+//                    }
+//
+//                    ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
+//                            .id(memoryId)
+//                            .maxMessages(annotation.chatMemoryMaxMessages())
+//                            .chatMemoryStore(chatMemoryStore)
+//                            .build();
+//                    return chatMemoryProvider;
+//                }
+//            }
+//        }
+//
+//        return null;
+//    }
 }

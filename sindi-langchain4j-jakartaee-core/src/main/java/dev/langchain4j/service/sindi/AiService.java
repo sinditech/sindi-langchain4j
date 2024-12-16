@@ -13,8 +13,10 @@ import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.moderation.ModerationModel;
 import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.store.memory.chat.ChatMemoryStore;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Stereotype;
 
@@ -49,6 +51,11 @@ public @interface AiService {
      * This attribute specifies the name of a {@link ChatMemoryProvider} bean that should be used by this AI Service.
      */
     String chatMemoryProvider() default "";
+    
+//    /**
+//     * This attribute specifies the name of a {@link ChatMemoryStore} bean that should be used by this AI Service.
+//     */
+//    String chatMemoryStore() default "";
 
     /**
      * This attribute specifies the name of a {@link ContentRetriever} bean that should be used by this AI Service.
@@ -64,6 +71,11 @@ public @interface AiService {
      * This attribute specifies the names of beans containing methods annotated with {@link Tool} that should be used by this AI Service.
      */
     Class<?>[] tools() default {};
+    
+    /**
+     * This attribute specifies the names of beans containing methods annotated with {@link ModerationModel} that should be used by this AI Service.
+     */
+    String moderationModel() default "";
 
-    int chatMemoryMaxMessages() default 10;
+//    int chatMemoryMaxMessages() default 10;
 }

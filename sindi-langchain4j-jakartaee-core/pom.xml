@@ -27,10 +27,12 @@
 		    <artifactId>langchain4j</artifactId>
 		</dependency>
 		
+		<!--
 		<dependency>
 			<groupId>za.co.sindi</groupId>
 			<artifactId>sindi-commons</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		-->
 	</dependencies>
 </project>
