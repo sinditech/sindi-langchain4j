@@ -71,7 +71,7 @@ public class LangChain4JAIServiceBean<T> implements Bean<T>, PassivationCapable 
      */
     @Override
     public T create(CreationalContext<T> creationalContext) {
-        T instance =  createAiServices();
+        T instance = createAiServices();
         if (!getInterceptorBindings().isEmpty()) {
             InterceptionFactory<T> factory = beanManager.createInterceptionFactory(creationalContext, aiServiceInterfaceClass);
             interceptorBindings.stream().forEach(factory.configure()::add);
