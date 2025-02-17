@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
@@ -220,6 +221,11 @@ public class LangChain4JAIServiceBean<T> implements Bean<T>, PassivationCapable 
         if (contentRetriever != null)
             aiServices.contentRetriever(contentRetriever);
         
+        ChatMemory chatMemory = getChatMemory(aiServiceAnnotation, beanManager);
+        if (chatMemory != null) {
+            aiServices.chatMemory(chatMemory);
+        }
+        
         ChatMemoryProvider chatMemoryProvider = getChatMemoryProvider(aiServiceAnnotation, beanManager);
         if (chatMemoryProvider != null) {
             aiServices.chatMemoryProvider(chatMemoryProvider);
@@ -255,6 +261,10 @@ public class LangChain4JAIServiceBean<T> implements Bean<T>, PassivationCapable 
 	
 	private static StreamingChatLanguageModel getStreamingChatLanguageModel(AiService annotation, BeanManager beanManager) {
 		return getBean(annotation.streamingChatModel(), StreamingChatLanguageModel.class, beanManager);
+    }
+	
+	private static ChatMemory getChatMemory(AiService annotation, BeanManager beanManager) {
+		return getBean(annotation.chatMemory(), ChatMemory.class, beanManager);
     }
 
     private static ContentRetriever getContentRetriever(AiService annotation, BeanManager beanManager) {
