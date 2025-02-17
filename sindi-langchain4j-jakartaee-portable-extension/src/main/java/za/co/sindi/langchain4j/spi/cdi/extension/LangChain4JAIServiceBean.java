@@ -223,9 +223,7 @@ public class LangChain4JAIServiceBean<T> implements Bean<T>, PassivationCapable 
         ChatMemoryProvider chatMemoryProvider = getChatMemoryProvider(aiServiceAnnotation, beanManager);
         if (chatMemoryProvider != null) {
             aiServices.chatMemoryProvider(chatMemoryProvider);
-        } /* else {
-        	aiServices.chatMemory(MessageWindowChatMemory.withMaxMessages(aiServiceAnnotation.chatMemoryMaxMessages()));
-        } */
+        }
 
         ModerationModel moderationModel = getModerationModel(aiServiceAnnotation, beanManager);
         if (moderationModel != null) {
@@ -241,20 +239,10 @@ public class LangChain4JAIServiceBean<T> implements Bean<T>, PassivationCapable 
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static <T> T getBean(Class<T> beanType, BeanManager beanManager) {
-		Bean<?> bean = beanManager.resolve(beanManager.getBeans(beanType));
-		if (bean == null) return null;
-		
-		CreationalContext<?> context = beanManager.createCreationalContext(bean);
-		return (T) beanManager.getReference(bean, beanType, context);
-	}
-	
-	@SuppressWarnings("unchecked")
 	private static <T> T getBean(String beanName, Class<T> beanType, BeanManager beanManager) {
 		if (beanName == null || beanName.isBlank()) return null;
-		if ("#default".equals(beanName)) return getBean(beanType, beanManager);
 		
-		Bean<?> bean = beanManager.resolve(beanManager.getBeans(beanName));
+		Bean<?> bean  = "#default".equals(beanName) ? beanManager.resolve(beanManager.getBeans(beanType)) : beanManager.resolve(beanManager.getBeans(beanName));
 		if (bean == null) return null;
 		
 		CreationalContext<?> context = beanManager.createCreationalContext(bean);
