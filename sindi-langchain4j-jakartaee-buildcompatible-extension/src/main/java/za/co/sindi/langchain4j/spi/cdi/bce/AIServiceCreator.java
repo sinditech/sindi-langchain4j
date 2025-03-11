@@ -14,6 +14,7 @@ import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.sindi.AiService;
+import dev.langchain4j.service.tool.ToolProvider;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.build.compatible.spi.Parameters;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanCreator;
@@ -38,7 +39,10 @@ public class AIServiceCreator implements SyntheticBeanCreator<Object> {
             if (streamingChatLanguageModel != null) 
             	aiServices.streamingChatLanguageModel(streamingChatLanguageModel);
         	
-            if (annotation.tools() != null && annotation.tools().length > 0) {
+            ToolProvider toolProvider = getToolProvider(lookup, annotation);
+            if (toolProvider != null) {
+            	aiServices.toolProvider(toolProvider);
+            } else if (annotation.tools() != null && annotation.tools().length > 0) {
             	aiServices.tools(Stream.of(annotation.tools())
                             .map(c -> {
 								try {
@@ -73,7 +77,7 @@ public class AIServiceCreator implements SyntheticBeanCreator<Object> {
             if (retrievalAugmentor != null) {
             	aiServices.retrievalAugmentor(retrievalAugmentor);
             }
-
+            
             return aiServices.build();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -121,5 +125,9 @@ public class AIServiceCreator implements SyntheticBeanCreator<Object> {
     
     private static RetrievalAugmentor getRetrievalAugmentor(Instance<Object> lookup, AiService annotation) {
     	return getInstance(lookup, annotation.retrievalAugmentor(), RetrievalAugmentor.class);
+    }
+    
+    private static ToolProvider getToolProvider(Instance<Object> lookup, AiService annotation) {
+    	return getInstance(lookup, annotation.toolProvider(), ToolProvider.class);
     }
 }

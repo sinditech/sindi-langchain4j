@@ -16,6 +16,7 @@ import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.moderation.ModerationModel;
 import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.service.tool.ToolProvider;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Stereotype;
 
@@ -75,6 +76,11 @@ public @interface AiService {
      * This attribute specifies the names of beans containing methods annotated with {@link ModerationModel} that should be used by this AI Service.
      */
     String moderationModel() default "";
+    
+    /**
+     * This attribute specifies the names of beans containing methods annotated with {@link ToolProvider} that should be used by this AI Service.
+     */
+    String toolProvider() default "";
 
 //    int chatMemoryMaxMessages() default 10;
 }

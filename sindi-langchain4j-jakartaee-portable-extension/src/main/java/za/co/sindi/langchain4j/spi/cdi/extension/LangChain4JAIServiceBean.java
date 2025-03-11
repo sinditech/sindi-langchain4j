@@ -18,6 +18,7 @@ import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.sindi.AiService;
+import dev.langchain4j.service.tool.ToolProvider;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.Any;
 import jakarta.enterprise.inject.Default;
@@ -197,7 +198,8 @@ public class LangChain4JAIServiceBean<T> implements Bean<T>, PassivationCapable 
 		ChatLanguageModel chatLanguageModel = getChatLanguageModel(aiServiceAnnotation, beanManager);
 		StreamingChatLanguageModel streamingChatLanguageModel = getStreamingChatLanguageModel(aiServiceAnnotation, beanManager);
         ContentRetriever contentRetriever = getContentRetriever(aiServiceAnnotation, beanManager);
-		
+        ToolProvider toolProvider = getToolProvider(aiServiceAnnotation, beanManager);
+        
         AiServices<T> aiServices = AiServices.builder(aiServiceInterfaceClass);
         if (chatLanguageModel != null) 
         	aiServices.chatLanguageModel(chatLanguageModel);
@@ -205,7 +207,9 @@ public class LangChain4JAIServiceBean<T> implements Bean<T>, PassivationCapable 
         if (streamingChatLanguageModel != null) 
         	aiServices.streamingChatLanguageModel(streamingChatLanguageModel);
     	
-        if (aiServiceAnnotation.tools() != null && aiServiceAnnotation.tools().length > 0) {
+        if (toolProvider != null) {
+        	aiServices.toolProvider(toolProvider);
+        } else if (aiServiceAnnotation.tools() != null && aiServiceAnnotation.tools().length > 0) {
         	aiServices.tools(Stream.of(aiServiceAnnotation.tools())
                         .map(c -> {
 							try {
@@ -281,5 +285,9 @@ public class LangChain4JAIServiceBean<T> implements Bean<T>, PassivationCapable 
     
     private static RetrievalAugmentor getRetrievalAugmentor(AiService annotation, BeanManager beanManager) {
     	return getBean(annotation.retrievalAugmentor(), RetrievalAugmentor.class, beanManager);
+    }
+    
+    private static ToolProvider getToolProvider(AiService annotation, BeanManager beanManager) {
+    	return getBean(annotation.toolProvider(), ToolProvider.class, beanManager);
     }
 }
