@@ -20,7 +20,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.report.sourceEncoding>UTF-8</project.report.sourceEncoding>
-		<dev.langchain4j.version>1.0.0-beta1</dev.langchain4j.version>
+		<dev.langchain4j.version>1.0.0-beta2</dev.langchain4j.version>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 		<jakartaee-api.version>10.0.0</jakartaee-api.version>
@@ -147,11 +147,11 @@
 	</build>
 	
 	<modules>
-		<module>sindi-langchain4j-jakartaee-core</module>
-		<module>sindi-langchain4j-jakartaee-portable-extension</module>
-		<module>sindi-langchain4j-jakartaee-buildcompatible-extension</module>
-		<module>sindi-langchain4j-vertex-ai-gemini-jakartaee</module>
-		<module>sindi-langchain4j-hugging-face-jakartaee</module>
-		<module>sindi-langchain4j-open-ai-jakartaee</module>
+		<module>sindi-langchain4j-cdi</module>
+		<module>sindi-langchain4j-cdi-portable-extension</module>
+		<module>sindi-langchain4j-cdi-buildcompatible-extension</module>
+		<module>sindi-langchain4j-cdi-vertex-ai-gemini</module>
+		<module>sindi-langchain4j-cdi-hugging-face</module>
+		<module>sindi-langchain4j-cdi-open-ai</module>
 	</modules>
 </project>
