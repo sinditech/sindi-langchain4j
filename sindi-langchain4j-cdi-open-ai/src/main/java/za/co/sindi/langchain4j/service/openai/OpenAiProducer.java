@@ -48,7 +48,6 @@ public class OpenAiProducer {
 			    .maxRetries(config.getMaxRetries())
 			    .logRequests(config.getLogRequests())
 			    .logResponses(config.getLogResponses())
-			    .tokenizer(config.getTokenizer())
 			    .customHeaders(config.getCustomHeaders())
 			    .listeners(config.getListeners())
 	            .build();

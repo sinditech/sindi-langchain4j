@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import dev.langchain4j.model.Tokenizer;
 import dev.langchain4j.model.chat.Capability;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
 import dev.langchain4j.model.chat.request.ChatRequestParameters;
@@ -45,7 +44,6 @@ public interface OpenAiChatLanguageConfig {
 //    private Integer maxRetries;
 //    private Boolean logRequests;
 //    private Boolean logResponses;
-//    private Tokenizer tokenizer;
 //    private Map<String, String> customHeaders;
 //    private List<ChatModelListener> listeners;
 	
@@ -237,14 +235,7 @@ public interface OpenAiChatLanguageConfig {
 	default Boolean getLogResponses() {
 		return null;
 	}
-	
-	/**
-	 * @return the tokenizer
-	 */
-	default Tokenizer getTokenizer() {
-		return null;
-	}
-	
+		
 	/**
 	 * @return the customHeaders
 	 */
