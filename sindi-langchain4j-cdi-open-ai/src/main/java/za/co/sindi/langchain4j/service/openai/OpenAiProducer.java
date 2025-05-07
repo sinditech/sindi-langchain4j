@@ -1,6 +1,6 @@
 package za.co.sindi.langchain4j.service.openai;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
@@ -18,7 +18,7 @@ public class OpenAiProducer {
 	private OpenAiChatLanguageConfig config;
 
 	@Produces
-	public ChatLanguageModel getChatLanguageModel(InjectionPoint p) {
+	public ChatModel getChatModel(InjectionPoint p) {
 		return OpenAiChatModel.builder()
 				.baseUrl(config.getBaseUrl())
 			    .apiKey(config.getApiKey())

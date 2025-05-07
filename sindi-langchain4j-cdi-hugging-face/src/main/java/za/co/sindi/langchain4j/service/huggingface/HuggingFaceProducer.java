@@ -1,6 +1,6 @@
 package za.co.sindi.langchain4j.service.huggingface;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.huggingface.HuggingFaceChatModel;
 import dev.langchain4j.model.huggingface.HuggingFaceEmbeddingModel;
@@ -23,7 +23,7 @@ public class HuggingFaceProducer {
 	private HuggingFaceEmbeddingConfig emdeddingConfig;
 
 	@Produces
-	public ChatLanguageModel getChatLanguageModel(InjectionPoint point) {
+	public ChatModel getChatModel(InjectionPoint point) {
 		return HuggingFaceChatModel.builder()
 									  .accessToken(chatLanguageConfig.getAccessToken())
 	                                  .modelId(chatLanguageConfig.getModelId())

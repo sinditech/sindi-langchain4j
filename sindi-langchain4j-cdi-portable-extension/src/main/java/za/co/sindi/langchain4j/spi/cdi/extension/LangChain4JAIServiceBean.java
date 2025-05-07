@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.moderation.ModerationModel;
 import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
@@ -195,17 +195,17 @@ public class LangChain4JAIServiceBean<T> implements Bean<T>, PassivationCapable 
 	
 	private T createAiServices() {
 		final AiService aiServiceAnnotation = aiServiceInterfaceClass.getAnnotation(AiService.class); 
-		ChatLanguageModel chatLanguageModel = getChatLanguageModel(aiServiceAnnotation, beanManager);
-		StreamingChatLanguageModel streamingChatLanguageModel = getStreamingChatLanguageModel(aiServiceAnnotation, beanManager);
+		ChatModel chatModel = getChatModel(aiServiceAnnotation, beanManager);
+		StreamingChatModel streamingChatModel = getStreamingChatModel(aiServiceAnnotation, beanManager);
         ContentRetriever contentRetriever = getContentRetriever(aiServiceAnnotation, beanManager);
         ToolProvider toolProvider = getToolProvider(aiServiceAnnotation, beanManager);
         
         AiServices<T> aiServices = AiServices.builder(aiServiceInterfaceClass);
-        if (chatLanguageModel != null) 
-        	aiServices.chatLanguageModel(chatLanguageModel);
+        if (chatModel != null) 
+        	aiServices.chatModel(chatModel);
         
-        if (streamingChatLanguageModel != null) 
-        	aiServices.streamingChatLanguageModel(streamingChatLanguageModel);
+        if (streamingChatModel != null) 
+        	aiServices.streamingChatModel(streamingChatModel);
     	
         if (toolProvider != null) {
         	aiServices.toolProvider(toolProvider);
@@ -259,12 +259,12 @@ public class LangChain4JAIServiceBean<T> implements Bean<T>, PassivationCapable 
 		return (T) beanManager.getReference(bean, beanType, context);
 	}
 	
-	private static ChatLanguageModel getChatLanguageModel(AiService annotation, BeanManager beanManager) {
-		return getBean(annotation.chatModel(), ChatLanguageModel.class, beanManager);
+	private static ChatModel getChatModel(AiService annotation, BeanManager beanManager) {
+		return getBean(annotation.chatModel(), ChatModel.class, beanManager);
     }
 	
-	private static StreamingChatLanguageModel getStreamingChatLanguageModel(AiService annotation, BeanManager beanManager) {
-		return getBean(annotation.streamingChatModel(), StreamingChatLanguageModel.class, beanManager);
+	private static StreamingChatModel getStreamingChatModel(AiService annotation, BeanManager beanManager) {
+		return getBean(annotation.streamingChatModel(), StreamingChatModel.class, beanManager);
     }
 	
 	private static ChatMemory getChatMemory(AiService annotation, BeanManager beanManager) {

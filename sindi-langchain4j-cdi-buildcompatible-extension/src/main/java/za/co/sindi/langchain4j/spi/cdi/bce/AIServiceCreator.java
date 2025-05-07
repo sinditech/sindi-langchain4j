@@ -7,8 +7,8 @@ import java.util.stream.Stream;
 
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.moderation.ModerationModel;
 import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
@@ -28,16 +28,16 @@ public class AIServiceCreator implements SyntheticBeanCreator<Object> {
         Class<?> interfaceClass = params.get(LangChain4JAiServiceBuildCompatibleExtension.PARAM_INTERFACE_CLASS, Class.class);
         AiService annotation = interfaceClass.getAnnotation(AiService.class);
 
-        ChatLanguageModel chatLanguageModel = getChatLanguageModel(lookup, annotation);
-        StreamingChatLanguageModel streamingChatLanguageModel = getStreamingChatLanguageModel(lookup, annotation);
+        ChatModel chatModel = getChatModel(lookup, annotation);
+        StreamingChatModel streamingChatModel = getStreamingChatModel(lookup, annotation);
         ContentRetriever contentRetriever = getContentRetriever(lookup, annotation);
         try {
             AiServices<?> aiServices = AiServices.builder(interfaceClass);
-            if (chatLanguageModel != null) 
-            	aiServices.chatLanguageModel(chatLanguageModel);
+            if (chatModel != null) 
+            	aiServices.chatModel(chatModel);
             
-            if (streamingChatLanguageModel != null) 
-            	aiServices.streamingChatLanguageModel(streamingChatLanguageModel);
+            if (streamingChatModel != null) 
+            	aiServices.streamingChatModel(streamingChatModel);
         	
             ToolProvider toolProvider = getToolProvider(lookup, annotation);
             if (toolProvider != null) {
@@ -99,12 +99,12 @@ public class AIServiceCreator implements SyntheticBeanCreator<Object> {
         return null;
     }
 
-    private static ChatLanguageModel getChatLanguageModel(Instance<Object> lookup, AiService annotation) {
-    	return getInstance(lookup, annotation.chatModel(), ChatLanguageModel.class);
+    private static ChatModel getChatModel(Instance<Object> lookup, AiService annotation) {
+    	return getInstance(lookup, annotation.chatModel(), ChatModel.class);
     }
 	
-	private static StreamingChatLanguageModel getStreamingChatLanguageModel(Instance<Object> lookup, AiService annotation) {
-		return getInstance(lookup, annotation.streamingChatModel(), StreamingChatLanguageModel.class);
+	private static StreamingChatModel getStreamingChatModel(Instance<Object> lookup, AiService annotation) {
+		return getInstance(lookup, annotation.streamingChatModel(), StreamingChatModel.class);
     }
 	
 	private static ChatMemory getChatMemory(Instance<Object> lookup, AiService annotation) {

@@ -20,7 +20,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.report.sourceEncoding>UTF-8</project.report.sourceEncoding>
-		<dev.langchain4j.version>1.0.0-beta3</dev.langchain4j.version>
+		<dev.langchain4j.version>1.0.0-rc1</dev.langchain4j.version>
+		<dev.langchain4j.parent-bom.version>1.0.0-beta4</dev.langchain4j.parent-bom.version>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 		<jakartaee-api.version>10.0.0</jakartaee-api.version>

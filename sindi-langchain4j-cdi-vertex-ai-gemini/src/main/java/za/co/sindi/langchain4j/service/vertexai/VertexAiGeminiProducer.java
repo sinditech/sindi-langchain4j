@@ -1,7 +1,7 @@
 package za.co.sindi.langchain4j.service.vertexai;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
 import dev.langchain4j.model.vertexai.VertexAiGeminiChatModel;
 import dev.langchain4j.model.vertexai.VertexAiGeminiStreamingChatModel;
 import jakarta.enterprise.context.Dependent;
@@ -20,7 +20,7 @@ public class VertexAiGeminiProducer {
 	private VertexAiGeminiConfig config;
 
 	@Produces
-	public ChatLanguageModel getChatLanguageModel(InjectionPoint p) {
+	public ChatModel getChatModel(InjectionPoint p) {
 		return VertexAiGeminiChatModel.builder()
 									  .project(config.getProject())
 	                                  .location(config.getLocation())
@@ -43,7 +43,7 @@ public class VertexAiGeminiProducer {
 	}
 	
 	@Produces
-	public StreamingChatLanguageModel getStreamingChatLanguageModel(InjectionPoint p) {
+	public StreamingChatModel getStreamingChatModel(InjectionPoint p) {
 		return VertexAiGeminiStreamingChatModel.builder()
 									  .project(config.getProject())
 	                                  .location(config.getLocation())

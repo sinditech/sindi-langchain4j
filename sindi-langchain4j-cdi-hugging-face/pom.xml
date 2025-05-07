@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-hugging-face</artifactId>
-			<version>${dev.langchain4j.version}</version>
+			<version>${dev.langchain4j.parent-bom.version}</version>
 		</dependency>
 	</dependencies>
 </project>
