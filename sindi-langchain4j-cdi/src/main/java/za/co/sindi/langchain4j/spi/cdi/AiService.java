@@ -35,7 +35,7 @@ public @interface AiService {
 	/**
      * This attribute specifies the name of a {@link ChatModel} bean that should be used by this AI Service.
      */
-    String chatModel() default "";
+    String chatModel() default "#default";
 
     /**
      * This attribute specifies the name of a {@link StreamingChatModel} bean that should be used by this AI Service.
