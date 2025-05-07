@@ -17,7 +17,7 @@ import jakarta.inject.Inject;
 public class HuggingFaceProducer {
 	
 	@Inject
-	private HuggingFaceChatLanguageConfig chatLanguageConfig;
+	private HuggingFaceChatConfig chatLanguageConfig;
 	
 	@Inject
 	private HuggingFaceEmbeddingConfig emdeddingConfig;

@@ -6,7 +6,7 @@ import java.time.Duration;
  * @author Buhake Sindi
  * @since 10 August 2024
  */
-public interface HuggingFaceChatLanguageConfig {
+public interface HuggingFaceChatConfig {
 	
 //	String accessToken;
 //    String modelId;
