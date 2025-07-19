@@ -148,11 +148,11 @@
 	</build>
 	
 	<modules>
-		<module>sindi-langchain4j-cdi</module>
-		<module>sindi-langchain4j-cdi-portable-extension</module>
-		<module>sindi-langchain4j-cdi-buildcompatible-extension</module>
-		<module>sindi-langchain4j-cdi-vertex-ai-gemini</module>
-		<module>sindi-langchain4j-cdi-hugging-face</module>
-		<module>sindi-langchain4j-cdi-open-ai</module>
+		<module>sindi-langchain4j-spi</module>
+		<module>sindi-langchain4j-portable-extension</module>
+		<module>sindi-langchain4j-buildcompatible-extension</module>
+		<module>sindi-langchain4j-vertex-ai-gemini</module>
+		<module>sindi-langchain4j-hugging-face</module>
+		<module>sindi-langchain4j-open-ai</module>
 	</modules>
 </project>
