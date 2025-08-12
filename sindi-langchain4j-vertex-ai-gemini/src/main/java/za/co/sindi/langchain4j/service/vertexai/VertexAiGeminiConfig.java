@@ -5,9 +5,9 @@ import java.util.Map;
 
 import com.google.cloud.vertexai.api.Schema;
 
-import dev.langchain4j.model.vertexai.HarmCategory;
-import dev.langchain4j.model.vertexai.SafetyThreshold;
-import dev.langchain4j.model.vertexai.ToolCallingMode;
+import dev.langchain4j.model.vertexai.gemini.HarmCategory;
+import dev.langchain4j.model.vertexai.gemini.SafetyThreshold;
+import dev.langchain4j.model.vertexai.gemini.ToolCallingMode;
 
 /**
  * @author Buhake Sindi

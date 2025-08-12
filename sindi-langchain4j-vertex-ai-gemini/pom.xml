@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-vertex-ai-gemini</artifactId>
-			<version>${dev.langchain4j.parent-bom.version}</version>
+			<version>${dev.langchain4j.community.version}</version>
 		</dependency>
 	</dependencies>
 </project>
