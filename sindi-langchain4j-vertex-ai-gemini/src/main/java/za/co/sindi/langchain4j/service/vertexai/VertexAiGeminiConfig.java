@@ -3,6 +3,7 @@ package za.co.sindi.langchain4j.service.vertexai;
 import java.util.List;
 import java.util.Map;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.vertexai.api.Schema;
 
 import dev.langchain4j.model.vertexai.gemini.HarmCategory;
@@ -32,6 +33,7 @@ public interface VertexAiGeminiConfig {
 //	private List<String> allowedFunctionNames;
 //	private Boolean logRequests;
 //	private Boolean logResponses;
+//	private GoogleCredentials credentials;
 	
 	/**
 	 * @return the project
@@ -144,6 +146,13 @@ public interface VertexAiGeminiConfig {
 	 * @return the logResponses
 	 */
 	default Boolean getLogResponses() {
+		return null;
+	}
+	
+	/**
+	 * @return the credentials
+	 */
+	default GoogleCredentials getCredentials() {
 		return null;
 	}
 }

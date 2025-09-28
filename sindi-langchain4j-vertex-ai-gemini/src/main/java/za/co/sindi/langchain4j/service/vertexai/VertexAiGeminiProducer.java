@@ -39,6 +39,7 @@ public class VertexAiGeminiProducer {
 	                                  .allowedFunctionNames(config.getAllowedFunctionNames())
 	                                  .logRequests(config.getLogRequests())
 	                                  .logResponses(config.getLogResponses())
+	                                  .credentials(config.getCredentials())
 	                                  .build();
 	}
 	
@@ -61,6 +62,7 @@ public class VertexAiGeminiProducer {
 	                                  .allowedFunctionNames(config.getAllowedFunctionNames())
 	                                  .logRequests(config.getLogRequests())
 	                                  .logResponses(config.getLogResponses())
+	                                  .credentials(config.getCredentials())
 	                                  .build();
 	}
 }

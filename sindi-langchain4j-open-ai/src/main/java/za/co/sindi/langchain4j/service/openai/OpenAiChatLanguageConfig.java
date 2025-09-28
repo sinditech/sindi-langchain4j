@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+
 import dev.langchain4j.model.chat.Capability;
 import dev.langchain4j.model.chat.listener.ChatModelListener;
 import dev.langchain4j.model.chat.request.ChatRequestParameters;
@@ -46,6 +48,8 @@ public interface OpenAiChatLanguageConfig {
 //    private Boolean logResponses;
 //    private Map<String, String> customHeaders;
 //    private List<ChatModelListener> listeners;
+//    private Boolean returnThinking;
+//	  private Logger logger;
 	
 	/**
 	 * @return the baseUrl
@@ -247,6 +251,20 @@ public interface OpenAiChatLanguageConfig {
 	 * @return the listeners
 	 */
 	default List<ChatModelListener> getListeners() {
+		return null;
+	}
+	
+	/**
+	 * @return returnThinking
+	 */
+	default Boolean getReturnThinking() {
+		return null;
+	}
+	
+	/**
+	 * @return logger
+	 */
+	default Logger getLogger() {
 		return null;
 	}
 }

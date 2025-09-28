@@ -44,12 +44,14 @@ public class OpenAiProducer {
 			    .store(config.getStore())
 			    .metadata(config.getMetadata())
 			    .serviceTier(config.getServiceTier())
+			    .returnThinking(config.getReturnThinking())
 			    .timeout(config.getTimeout())
 			    .maxRetries(config.getMaxRetries())
 			    .logRequests(config.getLogRequests())
 			    .logResponses(config.getLogResponses())
 			    .customHeaders(config.getCustomHeaders())
 			    .listeners(config.getListeners())
+			    .logger(config.getLogger())
 	            .build();
 	}
 }
